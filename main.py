@@ -112,4 +112,4 @@ def reboot():
 # As this is the main file of our minimal application, when called the service
 # should run.
 if __name__ == "__main__":
-    app.run(host="127.0.0.1")
+    app.run(host="0.0.0.0", port=4000)
