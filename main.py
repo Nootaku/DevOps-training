@@ -12,6 +12,8 @@ from flask import (
 
 # Create an instance of the Flask class
 app = Flask(__name__)
+version = "1.0"
+vue_counter = 0
 
 
 # Create routing for the 'root' with the route() decorator and apply a
@@ -22,7 +24,21 @@ def hello_world():
     All templates must be located in a folder called 'template' in the root of
     the project.
     """
-    return render_template("home.html")
+    global vue_counter
+    vue_counter += 1
+
+    return render_template(
+        "home.html",
+        version=version,
+        counter=vue_counter
+    )
+
+
+@app.route("/health")
+def getHealth():
+    """Foo bar blah
+    """
+    return render_template("health.html")
 
 
 # As this is the main file of our minimal application, when called the service
