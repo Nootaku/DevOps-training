@@ -6,23 +6,35 @@ Latest update: 10/03/2021
 
 # Import Flask
 from flask import (
-    Flask,           # default flask class
+    Flask,            # default flask class
     request,
-    render_template  # allows us to create HTML templates
+    render_template,  # allows us to create HTML templates
+    redirect,
+    url_for
 )
+import sys
 import socket
-from pygit2 import Repository
+import os
+from pygit2 import Repository  # https://www.pygit2.org/
+from multiprocessing import Process
 
 
 # Create an instance of the Flask class
 app = Flask(__name__)
+
+# Variables for app
 version = "1.0"
 vue_counter = 0
+
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
-repo = Repository('/path/to/your/git/repo')
-branch = repo.head.name
+repo = Repository(os.path.join(os.getcwd(), '.git'))
+branch = repo.head.shorthand
+
+status_ok = True
+
+server = Process(target=app.run)
 
 
 # Create routing for the 'root' with the route() decorator and apply a
@@ -35,12 +47,18 @@ def hello_world():
     """
     global vue_counter
     vue_counter += 1
+    status = "BAD"
+
+    if status_ok:
+        status = "OK"
 
     return render_template(
         "home.html",
         version=version,
         counter=vue_counter,
-        ip=request.host
+        ip=request.host,
+        git=branch,
+        status=status
     )
 
 
@@ -48,14 +66,48 @@ def hello_world():
 def getHealth():
     """Foo bar blah
     """
-    status_code = request.status_code
-    return render_template("health.html", status=status_code)
+    status_code = 500
+    status_text = "Error"
+    if status_ok:
+        status_code = 200
+        status_text = "OK"
+    return render_template(
+        "health.html",
+        status=status_code,
+        status_text=status_text
+    )
+
+
+@app.route("/bug")
+def createBug():
+    """Changing the status to 500
+    """
+    global status_ok
+    status_ok = False
+    return redirect(url_for("hello_world"))
 
 
 # Adding Error handlers
 @app.errorhandler(404)
 def invalidRoute(e):
+    """Basic error handler
+    """
     return render_template("404.html")
+
+
+@app.route("/reboot")
+def reboot():
+    """Gracefully shutting down the server.
+    Documentation at:
+    https://werkzeug.palletsprojects.com/en/1.0.x/serving/?highlight=server%20shutdown#shutting-down-the-server
+    """
+    shutdown = request.environ.get("werkzeug.server.shutdown")
+    if shutdown is None:
+        raise RuntimeError("Shutdown unavailable")
+    else:
+        shutdown()
+        return "Shutting down"
+
 
 # As this is the main file of our minimal application, when called the service
 # should run.
