@@ -1,4 +1,8 @@
 """Minimal HTTPS application using Flask.
+For automatic Reboot of the Flask service we will use PM2.
+PM2 is a node.js service that monitors the activity of the sevices.
+
+$ pm2 start main.py --name myName --interpreter=python3
 
 Version 1.0
 Latest update: 10/03/2021
@@ -16,16 +20,19 @@ import sys
 import socket
 import os
 from pygit2 import Repository  # https://www.pygit2.org/
-from multiprocessing import Process
+from requests import get
 
 
 # Create an instance of the Flask class
 app = Flask(__name__)
 
 # Variables for app
-version = "1.0"
+version = "2.0"
 vue_counter = 0
 
+
+ip = get('https://api.ipify.org').text
+print(ip)
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
@@ -33,8 +40,6 @@ repo = Repository(os.path.join(os.getcwd(), '.git'))
 branch = repo.head.shorthand
 
 status_ok = True
-
-server = Process(target=app.run)
 
 
 # Create routing for the 'root' with the route() decorator and apply a
@@ -57,6 +62,7 @@ def hello_world():
         version=version,
         counter=vue_counter,
         ip=request.host,
+        aws_ip=ip,
         git=branch,
         status=status
     )
@@ -112,4 +118,4 @@ def reboot():
 # As this is the main file of our minimal application, when called the service
 # should run.
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000)
+    app.run(host="0.0.0.0", port=4000, debug=True)
