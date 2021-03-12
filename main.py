@@ -32,7 +32,6 @@ vue_counter = 0
 
 
 ip = get('https://api.ipify.org').text
-print(ip)
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
