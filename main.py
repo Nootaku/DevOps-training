@@ -17,7 +17,6 @@ from flask import (
     url_for
 )
 import argparse
-import sys
 import socket
 import os
 from requests import get
