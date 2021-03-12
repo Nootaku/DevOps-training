@@ -16,11 +16,24 @@ from flask import (
     redirect,
     url_for
 )
+import argparse
 import sys
 import socket
 import os
 from pygit2 import Repository  # https://www.pygit2.org/
 from requests import get
+
+
+# Get Argumesnts from user
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--port',
+    type=int,
+    default=4000,
+    help='Port on which the service should be launched'
+)
+args = parser.parse_args()
+port = args.port
 
 
 # Create an instance of the Flask class
@@ -117,4 +130,4 @@ def reboot():
 # As this is the main file of our minimal application, when called the service
 # should run.
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=True)
