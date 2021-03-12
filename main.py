@@ -2,7 +2,7 @@
 For automatic Reboot of the Flask service we will use PM2.
 PM2 is a node.js service that monitors the activity of the sevices.
 
-$ pm2 start main.py --name myName --interpreter=python3
+$ pm2 start main.py --name myName --interpreter=python3.8
 
 Version 1.0
 Latest update: 10/03/2021
@@ -20,7 +20,6 @@ import argparse
 import sys
 import socket
 import os
-from pygit2 import Repository  # https://www.pygit2.org/
 from requests import get
 
 
@@ -48,8 +47,10 @@ ip = get('https://api.ipify.org').text
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
-repo = Repository(os.path.join(os.getcwd(), '.git'))
-branch = repo.head.shorthand
+with open(".git/HEAD") as head:
+    line = head.read()
+
+branch = line.split("/")[-1].split("\n")[0]
 
 status_ok = True
 
