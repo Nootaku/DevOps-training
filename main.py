@@ -41,13 +41,14 @@ app = Flask(__name__)
 # Variables for app
 version = "2.0"
 vue_counter = 0
+absolute_path = os.path.dirname(os.path.realpath(__file__))
 
 
 ip = get('https://api.ipify.org').text
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
 
-with open(".git/HEAD") as head:
+with open(os.path.join(absolute_path, ".git", "HEAD")) as head:
     line = head.read()
 
 branch = line.split("/")[-1].split("\n")[0]
