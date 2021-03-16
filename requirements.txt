@@ -1,3 +1,4 @@
 ########## PYTHON DEPENDENCIES TO INSTALL ##########
 # Python 3.8.5
 Flask == 1.1.2
+redis == 3.5.3

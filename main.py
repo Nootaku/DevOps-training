@@ -20,6 +20,7 @@ import argparse
 import socket
 import os
 from requests import get
+import redis
 
 
 # Get Argumesnts from user
@@ -33,13 +34,17 @@ parser.add_argument(
 args = parser.parse_args()
 port = args.port
 
+# Initialize the redis client
+redis_client = redis.Redis("localhost", port=6379)
+if not redis_client.exists("count"):
+    redis_client.set("count", 0)
+
 
 # Create an instance of the Flask class
 app = Flask(__name__)
 
 # Variables for app
-version = "2.0"
-vue_counter = 0
+version = "3.0"
 absolute_path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -63,8 +68,8 @@ def hello_world():
     All templates must be located in a folder called 'template' in the root of
     the project.
     """
-    global vue_counter
-    vue_counter += 1
+    vue_counter = int(r.get("count").decode("utf-8"))
+    redis_client.incr("count")
     status = "BAD"
 
     if status_ok:
