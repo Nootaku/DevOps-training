@@ -5,7 +5,7 @@ PM2 is a node.js service that monitors the activity of the sevices.
 $ pm2 start main.py --name myName --interpreter=python3.8
 
 Version 1.0
-Latest update: 10/03/2021
+Latest update: 18/03/2021
 """
 
 # Import Flask
